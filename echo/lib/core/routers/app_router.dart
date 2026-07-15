@@ -1,6 +1,6 @@
+import 'package:echo/features/auth/presentation/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../features/splash/presentation/screens/splash_screen.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -13,11 +13,7 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
       path: '/login',
-      builder: (context, state) => Scaffold(
-        body: Center(
-          child: Text('Login Screen'),
-        ),
-      ),
+      builder: (context, state) => LoginScreen(),
     ),
   ],
 );
