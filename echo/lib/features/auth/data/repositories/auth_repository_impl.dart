@@ -37,4 +37,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   User? get currentUser => remoteDataSource.currentUser;
+
+  @override
+  Future<UserCredential?> signInWithGoogle() {
+    return remoteDataSource.signInWithGoogle();
+  }
 }

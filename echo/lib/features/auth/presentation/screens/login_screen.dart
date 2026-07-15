@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/primary_text_field.dart';
@@ -26,6 +27,49 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> signInWithGoogle() async {
+    setState(() => isLoading = true);
+
+    try {
+      final authRepository = ref.read(authRepositoryProvider);
+
+      final userCredential =
+      await authRepository.signInWithGoogle();
+
+      if (userCredential == null) {
+        setState(() => isLoading = false);
+        return;
+      }
+
+      if (!mounted) return;
+
+      context.go('/onboarding');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Google Sign-In Successful"),
+        ),
+      );
+
+    } catch (e, stackTrace) {
+      debugPrint("GOOGLE SIGN IN ERROR:");
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
   }
 
   Future<void> signIn() async {
@@ -234,7 +278,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             SocialButton(
                               text: "Continue with Google",
                               assetIcon: "assets/icons/google.png",
-                              onPressed: () {},
+                              onPressed: signInWithGoogle,
                             ),
 
                             const SizedBox(height: 16),
