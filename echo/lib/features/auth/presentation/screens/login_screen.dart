@@ -2,11 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/primary_text_field.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/social_button.dart';
+
+
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -35,29 +38,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final authRepository = ref.read(authRepositoryProvider);
 
-      final userCredential =
-      await authRepository.signInWithGoogle();
+      final userCredential = await authRepository.signInWithGoogle();
 
       if (userCredential == null) {
-        setState(() => isLoading = false);
         return;
       }
 
+      final prefs = await SharedPreferences.getInstance();
+      final onboardingCompleted =
+          prefs.getBool('onboarding_completed') ?? false;
+
       if (!mounted) return;
 
-      context.go('/onboarding');
+      if (onboardingCompleted) {
+        context.go('/chat');
+      } else {
+        context.go('/onboarding');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Google Sign-In Successful"),
+        SnackBar(
+          content: Text(
+            e.message ?? 'Google Sign-In Failed',
+          ),
         ),
       );
-
-    } catch (e, stackTrace) {
-      debugPrint("GOOGLE SIGN IN ERROR:");
-      debugPrint(e.toString());
-      debugPrint(stackTrace.toString());
-
+    } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
