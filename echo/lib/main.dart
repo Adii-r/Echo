@@ -6,7 +6,6 @@ import 'core/theme/app_theme.dart';
 
 
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(
