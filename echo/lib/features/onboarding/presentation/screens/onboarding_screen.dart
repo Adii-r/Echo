@@ -65,7 +65,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       if (selectedInterests.contains(interest)) {
         selectedInterests.remove(interest);
       } else {
-        // Optional limit
         if (selectedInterests.length < 10) {
           selectedInterests.add(interest);
         }
