@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../gamification/presentation/providers/gamification_provider.dart';
 import '../providers/chat_provider.dart';
@@ -63,7 +64,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         "message": prompt,
         "isUser": true,
       });
+
+      isTyping = true;
     });
+
+    scrollToBottom();
 
 
     await ref.read(gamificationProvider).rewardForPrompt();
@@ -75,20 +80,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (!mounted) return;
 
       setState(() {
+        isTyping = false;
+
         messages.add({
           "message": reply,
           "isUser": false,
         });
       });
+
+      scrollToBottom();
     } catch (e) {
       if (!mounted) return;
 
       setState(() {
+        isTyping = false;
+
         messages.add({
           "message": "Sorry, something went wrong.",
           "isUser": false,
         });
       });
+
+      scrollToBottom();
     }
   }
 
@@ -145,9 +158,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ),
             ),
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: ProfileTile(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ProfileTile(
+                onTap: () => context.push('/profile'),
+              ),
             ),
 
             Padding(

@@ -3,13 +3,18 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class ProfileTile extends StatelessWidget {
-  const ProfileTile({super.key});
+  final VoidCallback? onTap;
+
+  const ProfileTile({
+    super.key,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: () => context.push('/profile'),
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(24),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 4,

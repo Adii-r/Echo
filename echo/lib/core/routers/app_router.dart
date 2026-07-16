@@ -3,6 +3,7 @@ import 'package:echo/features/onboarding/presentation/screens/onboarding_screen.
 import 'package:go_router/go_router.dart';
 import '../../features/chat/presentation/screens/chat_screen.dart';
 import '../../features/gamification/presentation/screens/gamification_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -31,6 +32,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/gamification',
       builder: (context, state) => GamificationScreen(),
+    ),
+
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => ProfileScreen(),
     ),
   ],
 );
