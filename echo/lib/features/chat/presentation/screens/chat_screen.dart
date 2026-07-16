@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../gamification/presentation/providers/gamification_provider.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/chat_bubble.dart';
 import '../widgets/chat_input.dart';
@@ -55,41 +56,36 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     if (prompt.isEmpty) return;
 
+    messageController.clear();
+
     setState(() {
       messages.add({
         "message": prompt,
         "isUser": true,
       });
-      isTyping = true;
     });
 
-    messageController.clear();
-    scrollToBottom();
+
+    await ref.read(gamificationProvider).rewardForPrompt();
 
     try {
-      final sendMessageUseCase =
-      ref.read(sendMessageUseCaseProvider);
+      final reply = await ref.read(chatProvider).sendMessage(prompt);
+      await ref.read(gamificationProvider).rewardForResponse();
 
-      final response = await sendMessageUseCase(prompt);
+      if (!mounted) return;
 
       setState(() {
         messages.add({
-          "message": response,
+          "message": reply,
           "isUser": false,
         });
-        isTyping = false;
       });
-
-      scrollToBottom();
-    } catch (e, stackTrace) {
-      debugPrint("Gemini Error: $e");
-      debugPrintStack(stackTrace: stackTrace);
+    } catch (e) {
+      if (!mounted) return;
 
       setState(() {
-        isTyping = false;
-
         messages.add({
-          "message": e.toString(),
+          "message": "Sorry, something went wrong.",
           "isUser": false,
         });
       });
