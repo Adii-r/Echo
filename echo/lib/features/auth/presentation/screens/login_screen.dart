@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../gamification/presentation/providers/gamification_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/primary_text_field.dart';
 import '../widgets/primary_button.dart';
@@ -47,6 +48,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final prefs = await SharedPreferences.getInstance();
       final onboardingCompleted =
           prefs.getBool('onboarding_completed') ?? false;
+
+      await ref.read(gamificationProvider).rewardForLogin();
 
       if (!mounted) return;
 
@@ -104,6 +107,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final prefs = await SharedPreferences.getInstance();
       final onboardingCompleted =
           prefs.getBool('onboarding_completed') ?? false;
+
+      await ref.read(gamificationProvider).rewardForLogin();
 
       if (!mounted) return;
 
