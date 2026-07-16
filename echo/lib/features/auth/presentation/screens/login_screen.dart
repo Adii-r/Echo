@@ -101,14 +101,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         password: passwordController.text.trim(),
       );
 
+      final prefs = await SharedPreferences.getInstance();
+      final onboardingCompleted =
+          prefs.getBool('onboarding_completed') ?? false;
+
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login Successful'),
-        ),
-      );
-
+      if (onboardingCompleted) {
+        context.go('/chat');
+      } else {
+        context.go('/onboarding');
+      }
     } on FirebaseAuthException catch (e) {
       String message;
 
@@ -116,23 +119,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         case 'invalid-credential':
           message = 'Invalid email or password.';
           break;
-
         case 'user-not-found':
           message = 'No account found with this email.';
           break;
-
         case 'wrong-password':
           message = 'Incorrect password.';
           break;
-
         case 'invalid-email':
           message = 'Please enter a valid email.';
           break;
-
         case 'too-many-requests':
           message = 'Too many login attempts. Try again later.';
           break;
-
         default:
           message = e.message ?? 'Login failed.';
       }
@@ -142,9 +140,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message)),
       );
-    }
-
-    finally {
+    } finally {
       if (mounted) {
         setState(() => isLoading = false);
       }
